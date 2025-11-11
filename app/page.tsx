@@ -38,10 +38,10 @@
    return (
      <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
        <MainSwitch user={user} />
-       <div className="bubble-wrapper">
+       {/* <div className="bubble-wrapper">
        <StatusBubble status="Connected Clickers: 0" color="limegreen"/>
        <StatusBubble status="Connected Clickers: 0" color="limegreen"/>
-       </div>
+       </div> */}
        <NameInput user={user} />
        <Leaderboard />
        {!user && <Auth onAuthSuccess={async () => {
