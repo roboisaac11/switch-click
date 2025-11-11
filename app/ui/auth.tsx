@@ -29,29 +29,31 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           password,
         })
         if (error) throw error
-      } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        })
-        console.log(`Created account ${username}:${password}`)
-        if (error) throw error
-      }
+       } else {
+         const { error } = await supabase.auth.signUp({
+           email,
+           password,
+         })
+         console.log(`Created account ${username}:${password}`)
+         if (error) throw error
+       }
 
-      // Create or update profile
-      const { data: user } = await supabase.auth.getUser()
-      console.log('Authenticated user:', user)
-      if (user.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: user.user.id,
-            username,
-          })
-        if (profileError) console.error('Profile error:', profileError)
-      }
+       // Create or update profile
+       const { data: user } = await supabase.auth.getUser()
+       console.log('Authenticated user:', user)
+       if (user.user) {
+         const { error: profileError } = await supabase
+           .from('profiles')
+           .upsert({
+             id: user.user.id,
+             username,
+           })
+         if (profileError) console.error('Profile error:', profileError)
+       }
 
-      onAuthSuccess()
+       onAuthSuccess()
+
+       window.location.reload()
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {

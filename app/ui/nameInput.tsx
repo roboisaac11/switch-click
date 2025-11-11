@@ -7,9 +7,10 @@ import { User } from '@supabase/supabase-js'
 
 interface NameInputProps {
   user: User | null
+  disabled?: boolean
 }
 
-export default function NameInput({ user }: NameInputProps) {
+export default function NameInput({ user, disabled = false }: NameInputProps) {
   const [currentName, setCurrentName] = useState('Anonymous')
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState('')
@@ -79,7 +80,7 @@ export default function NameInput({ user }: NameInputProps) {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${disabled ? styles.disabled : ''}`}>
       <div className={styles.content}>
         {isEditing ? (
           <>

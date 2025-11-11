@@ -10,7 +10,11 @@ interface LeaderboardEntry {
   clicks: number
 }
 
-export default function Leaderboard() {
+interface LeaderboardProps {
+  disabled?: boolean
+}
+
+export default function Leaderboard({ disabled = false }: LeaderboardProps) {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -53,7 +57,7 @@ export default function Leaderboard() {
   }, [])
 
   return (
-    <div className={`${styles.container} ${isCollapsed ? styles.collapsed : ''}`}>
+    <div className={`${styles.container} ${isCollapsed ? styles.collapsed : ''} ${disabled ? styles.disabled : ''}`}>
       <h3 className={styles.title}>Leaderboard</h3>
       <button
         className={styles.toggleButton}

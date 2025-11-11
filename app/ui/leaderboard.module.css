@@ -17,6 +17,12 @@
   height: 50px;
 }
 
+.disabled {
+  pointer-events: none;
+  filter: blur(2px);
+  opacity: 0.6;
+}
+
 .toggleButton {
   position: absolute;
   top: 8px;

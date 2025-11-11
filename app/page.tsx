@@ -3,7 +3,7 @@
  import { useState, useEffect } from 'react'
  import { supabase } from './utils/supabase/client'
  import { User } from '@supabase/supabase-js'
- import StatusBubble from "./ui/statusBubble";
+
  import MainSwitch from "./ui/switches/mainSwitch";
  import Leaderboard from "./ui/leaderboard";
  import NameInput from "./ui/nameInput";
@@ -42,12 +42,12 @@
        <StatusBubble status="Connected Clickers: 0" color="limegreen"/>
        <StatusBubble status="Connected Clickers: 0" color="limegreen"/>
        </div> */}
-       <NameInput user={user} />
-       <Leaderboard />
-       {!user && <Auth onAuthSuccess={async () => {
-         const { data: { user: newUser } } = await supabase.auth.getUser()
-         setUser(newUser)
-       }} />}
+        <NameInput user={user} disabled={!user} />
+        <Leaderboard disabled={!user} />
+        {!user && <Auth onAuthSuccess={async () => {
+          const { data: { user: newUser } } = await supabase.auth.getUser()
+          setUser(newUser)
+        }} />}
      </div>
    );
  }
