@@ -1,0 +1,80 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #1a1a1a;
+  color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #333;
+}
+
+.modal h2 {
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal input {
+  padding: 0.5rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: white;
+}
+
+.modal input::placeholder {
+  color: #aaa;
+}
+
+.modal button {
+  padding: 0.5rem;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.modal button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle {
+  background: none;
+  color: #0070f3;
+  text-decoration: underline;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+}
