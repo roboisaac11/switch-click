@@ -47,7 +47,6 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
           .upsert({
             id: user.user.id,
             username,
-            total_clicks: 0,
           })
         if (profileError) console.error('Profile error:', profileError)
       }
