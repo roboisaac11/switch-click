@@ -49,17 +49,21 @@ export default function NameInput({ user, disabled = false }: NameInputProps) {
           return
         }
 
-        // Update auth email
         const newEmail = `${newName}@theisaaccompany.ca`
-        console.log('Updating email to:', newEmail)
-        const { error: authError } = await supabase.auth.updateUser({ email: newEmail })
-        if (authError) {
-          console.error('Error updating auth email:', authError)
-          // Optionally revert profile update
-          await supabase
-            .from('profiles')
-            .update({ username: currentName })
-            .eq('id', user.id)
+        try {
+          const res = await fetch('/api/update-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: user.id, newEmail }),
+          })
+
+          const data = await res.json()
+          if (!res.ok) throw data.error
+          console.log('Email updated successfully:', data)
+        } catch (err) {
+          console.error('Error updating auth email:', err)
+          // revert profile if email update fails
+          await supabase.from('profiles').update({ username: currentName }).eq('id', user.id)
           setCurrentName(currentName)
         }
       }

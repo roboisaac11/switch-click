@@ -56,85 +56,38 @@ export default function MainSwitch({ user }: MainSwitchProps) {
 
   }, []);
 
-  const incrementTotal = (): number => {
+  const incrementTotal = () => {
     const newTotal = (total ?? 0) + 1;
     setTotal(newTotal);
     setIsOn(newTotal % 2 !== 0);
-    return newTotal;
   }
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (disabledRef.current || total === null || !user) {
-      console.log("Click ignored: ", { disabled: disabledRef.current, total, user });
-      return; // Currently disabled so just pretend nothing has happened
-    }
-    console.log("Switch clicked:", { disabled: disabledRef.current, total, user });
+  const handleChange = async (_e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user) return;
+
+    setDisabled(true);
     disabledRef.current = true;
 
-    // Disable then reenable after cooldown
-    setDisabled(true);
+    incrementTotal();
 
-    const checked = e.target.checked;
-    setIsOn(checked);
-    const newTotal = incrementTotal();
+    // Call the atomic RPC
+    const { data: newTotal, error } = await supabase.rpc('click_button', {
+      p_user_id: user.id,
+      p_button_name: 'mainSwitch',
+      p_increment: 1
+    });
 
+    if (error) {
+      console.error("Error clicking button:", error);
+    } else if (newTotal !== null) {
+      setTotal(newTotal);
+      setIsOn(newTotal % 2 !== 0);
+    }
 
-    // Parallel fetches and updates for better performance
-    const globalPromise = supabase
-      .from('global_clicks')
-      .update({ total: newTotal })
-      .eq('button_name', 'mainSwitch');
-
-    const userSelectPromise = supabase
-      .from('user_clicks')
-      .select('count')
-      .eq('user_id', user.id)
-      .eq('button_name', 'mainSwitch')
-      .single();
-
-    const profileSelectPromise = supabase
-      .from('profiles')
-      .select('total_clicks')
-      .eq('id', user.id)
-      .single();
-
-    const [{ data: existing, error: userSelectError }, { data: profileData, error: profileSelectError }] = await Promise.all([
-      userSelectPromise,
-      profileSelectPromise
-    ]);
-
-    if (userSelectError && userSelectError.code !== 'PGRST116') console.error("Error selecting user clicks:", userSelectError);
-    if (profileSelectError) console.error("Error selecting profile:", profileSelectError);
-
-    const newCount = (existing?.count || 0) + 1;
-    const newTotalClicks = (profileData?.total_clicks || 0) + 1;
-
-    const userUpdatePromise = supabase
-      .from('user_clicks')
-      .upsert({
-        user_id: user.id,
-        button_name: 'mainSwitch',
-        count: newCount
-      }, { onConflict: 'user_id,button_name' });
-
-    const profileUpdatePromise = supabase
-      .from('profiles')
-      .update({ total_clicks: newTotalClicks })
-      .eq('id', user.id);
-
-    const [{ error: globalError }, { error: userError }, { error: profileError }] = await Promise.all([
-      globalPromise,
-      userUpdatePromise,
-      profileUpdatePromise
-    ]);
-
-    if (globalError) console.error("Error updating global total in Supabase:", globalError);
-    if (userError) console.error("Error updating user clicks:", userError);
-    if (profileError) console.error("Error updating profile:", profileError);
-    
     disabledRef.current = false;
     setDisabled(false);
   };
+
 
   return (
     <div id="switchContainer" className="flex flex-col items-center">
