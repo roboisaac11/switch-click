@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import styles from './nameInput.module.css'
 import { supabase } from '../utils/supabase/client'
-import { User } from '@supabase/supabase-js'
+import { PostgrestError, User } from '@supabase/supabase-js'
 
 interface NameInputProps {
   user: User | null
@@ -14,6 +14,7 @@ export default function NameInput({ user, disabled = false }: NameInputProps) {
   const [currentName, setCurrentName] = useState('Anonymous')
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -45,7 +46,8 @@ export default function NameInput({ user, disabled = false }: NameInputProps) {
           .update({ username: newName })
           .eq('id', user.id)
         if (profileError) {
-          console.error('Error updating username:', profileError)
+          setError(profileError.message)
+          setCurrentName(currentName)
           return
         }
 
@@ -59,9 +61,9 @@ export default function NameInput({ user, disabled = false }: NameInputProps) {
 
           const data = await res.json()
           if (!res.ok) throw data.error
-          console.log('Email updated successfully:', data)
-        } catch (err) {
-          console.error('Error updating auth email:', err)
+          setError(null)
+        } catch (err: PostgrestError | any) {
+          setError(err.message || 'Failed to update email')
           // revert profile if email update fails
           await supabase.from('profiles').update({ username: currentName }).eq('id', user.id)
           setCurrentName(currentName)
@@ -71,6 +73,7 @@ export default function NameInput({ user, disabled = false }: NameInputProps) {
       // Edit mode - prepare for editing
       setEditValue('')
       setIsEditing(true)
+      setError(null)
     }
   }
 
@@ -122,6 +125,7 @@ export default function NameInput({ user, disabled = false }: NameInputProps) {
           </>
         )}
       </div>
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   )
 }

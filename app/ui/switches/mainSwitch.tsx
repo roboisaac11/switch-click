@@ -83,9 +83,10 @@ export default function MainSwitch({ user }: MainSwitchProps) {
       setTotal(newTotal);
       setIsOn(newTotal % 2 !== 0);
     }
-
-    disabledRef.current = false;
-    setDisabled(false);
+    setTimeout(() => {
+      disabledRef.current = false;
+      setDisabled(false);
+    }, 500); // 500ms cooldown
   };
 
 
