@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import StarsBackground from "./ui/backgrounds/starsBackground";
+import DevelopmentOverlay from "./ui/developmentOverlay";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
       >
         <StarsBackground />
         {children}
+        <DevelopmentOverlay />
       </body>
     </html>
   );
